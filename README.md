@@ -4,6 +4,7 @@
 Tujuan utama ujian ini adalah *memperbaiki kode yang berantakan* (Legacy Code) menjadi rapi di dalam framework CodeIgniter 4. 
 
 *ATURAN MAIN:*
+
 1.⁠ ⁠Anda *DILARANG* hanya menyalin data dari file lama
 
 2.⁠ ⁠Anda *WAJIB* menyesuaikan data barang/jasa di dalam Model sesuai dengan *Ide Startup* Anda masing-masing (yang anda tentukan sendiri).
