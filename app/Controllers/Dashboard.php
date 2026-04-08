@@ -1,23 +1,39 @@
 <?php
 namespace App\Controllers;
-use App\Models\ProductModel; 
+
+use App\Models\ProductModel;
+use CodeIgniter\HTTP\ResponseInterface;
 
 class Dashboard extends BaseController
 {
-    public function index()
+    protected ProductModel $productModel;
+
+    public function __construct()
     {
-        // TODO: TUGAS MAHASISWA!
-        // Cek session di sini. Jika session 'isLoggedIn' belum ada/false, 
-        // tendang (redirect) pengguna kembali ke halaman login ('/')
+        $this->productModel = new ProductModel();
+    }
 
-        // Panggil Gudang (Model)
-        $model = new ProductModel();
-        
-        // Siapkan data untuk dikirim ke Etalase (View)
-        $data['nama_startup'] = "Startup Saya"; // Ganti dengan nama startup di README
-        $data['products'] = $model->getDummyData();
+    public function index(): ResponseInterface|string
+    {
+        try {
+            $data = $this->prepareDashboardData();
+            return view('dashboard_view', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Dashboard error: ' . $e->getMessage());
+            return $this->showErrorPage();
+        }
+    }
 
-        // Tampilkan Etalase (View)
-        return view('dashboard_view', $data);
+    private function prepareDashboardData(): array
+    {
+        return [
+            'nama_startup' => "Kepul Lite",
+            'products' => [] // Data handled by JavaScript/Local Storage
+        ];
+    }
+
+    private function showErrorPage(): string
+    {
+        return view('errors/html/error_500', ['message' => 'Terjadi kesalahan pada sistem.']);
     }
 }

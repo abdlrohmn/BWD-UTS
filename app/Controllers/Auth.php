@@ -1,30 +1,48 @@
 <?php
 namespace App\Controllers;
 
-class Auth extends BaseController
+use CodeIgniter\Controller;
+use CodeIgniter\HTTP\ResponseInterface;
+
+class Auth extends Controller
 {
-    public function index()
+    public function index(): string
     {
-        // Jika sudah login, tendang ke dashboard
-        if (session()->get('isLoggedIn')) {
-            return redirect()->to('/dashboard');
+        // Tampilkan halaman login
+        return view('login_view');
+    }
+
+    public function process(): ResponseInterface
+    {
+        try {
+            $username = $this->request->getPost('username');
+            $password = $this->request->getPost('password');
+
+            if ($this->validateCredentials($username, $password)) {
+                session()->set('isLoggedIn', true);
+                session()->set('username', $username);
+                session()->regenerate(); // Security: regenerate session ID
+                return redirect()->to('/dashboard')->with('success', 'Login berhasil!');
+            } else {
+                session()->setFlashdata('error', 'Login Gagal!');
+                return redirect()->back();
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Login error: ' . $e->getMessage());
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem!');
+            return redirect()->back();
         }
-        return view('login_view'); // Tampilkan halaman login
     }
 
-    public function process()
+    public function logout(): ResponseInterface
     {
-        // TODO: TUGAS MAHASISWA!
-        // 1. Ambil 'username' dan 'password' menggunakan $this->request->getPost()
-        // 2. Buat logika IF: Jika username == 'admin' dan password == 'bisnis123'
-        // 3. Jika BENAR: Set session 'isLoggedIn' = true, lalu redirect ke '/dashboard'
-        // 4. Jika SALAH: Redirect kembali ke halaman '/'
+        session()->destroy();
+        return redirect()->to('/')->with('success', 'Logout berhasil!');
     }
 
-    public function logout()
+    private function validateCredentials(string $username, string $password): bool
     {
-        // TODO: TUGAS MAHASISWA!
-        // 1. Hancurkan session menggunakan session()->destroy()
-        // 2. Redirect ke halaman '/'
+        // Dummy validation - in real app, check against database
+        return $username === 'admin' && $password === 'bisnis123';
     }
 }
